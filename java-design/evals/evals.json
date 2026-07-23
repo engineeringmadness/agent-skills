@@ -1,0 +1,49 @@
+{
+  "skill_name": "java-design",
+  "evals": [
+    {
+      "id": 1,
+      "name": "discount-strategy-oo-design",
+      "prompt": "I'm building a checkout system for an online store. We need to apply different discount strategies: percentage off (e.g. 15%), buy-one-get-one-free, and a seasonal flat-amount coupon (e.g. $10 off). Right now I have a Checkout class with a giant if/else chain that checks a discountType string and applies the right math inline, and it's getting messy every time we add a new discount type. How should I structure this in Java? Show me the design.",
+      "expected_output": "A design using the strategy pattern with an interface (e.g. DiscountStrategy) and separate implementations per discount type, injected into Checkout via the interface (dependency inversion). No if/else type branching. Composition over inheritance. Mention of open-closed principle (adding a discount = new class, no edit to Checkout). Concise, focused interfaces.",
+      "files": [],
+      "expectations": [
+        "Defines a strategy interface (e.g. DiscountStrategy or similar) rather than type-string branching",
+        "Each discount type is a separate class implementing the interface, not inlined in Checkout",
+        "Checkout depends on the interface, not concrete discount classes (dependency inversion)",
+        "Adding a new discount type does not require editing Checkout (open-closed principle)",
+        "No if/else or switch on a discount type string in the core logic"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "functional-aggregation",
+      "prompt": "I have a List<Transaction> where Transaction has getAmount() returning BigDecimal and getCategory() returning a String. I need to compute the total amount per category and return the categories sorted by total descending, but only including categories whose total exceeds 1000. Write this in Java.",
+      "expected_output": "A declarative stream pipeline: collect with groupingBy(getCategory, summingBigDecimal), filter entries over 1000, sort by value descending. Immutable, no mutation inside intermediate ops, meaningful parameter names, no unnecessary defensive code beyond the requirements.",
+      "files": [],
+      "expectations": [
+        "Uses a stream pipeline (declarative), not imperative for-loops with mutable accumulators",
+        "Groups by category and sums amounts per group (groupingBy + reduction/sum)",
+        "Filters categories whose total exceeds 1000",
+        "Sorts results by total descending",
+        "Does not mutate external state inside filter/map intermediate operations",
+        "Uses meaningful parameter names, not single letters"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "refactor-imperative-to-design",
+      "prompt": "Refactor this Java method. It's part of a notification service and it's hard to maintain. Explain the design problems and rewrite it well.\n\n```java\npublic class NotificationService {\n    public void notify(String type, String userId, String message) {\n        if (type.equals(\"EMAIL\")) {\n            String email = userRepo.getEmail(userId);\n            if (email != null && email.contains(\"@\")) {\n                smtpClient.send(email, \"Notification\", message);\n                auditLog.record(userId, \"email sent\");\n            }\n        } else if (type.equals(\"SMS\")) {\n            String phone = userRepo.getPhone(userId);\n            if (phone != null && phone.length() >= 10) {\n                smsGateway.send(phone, message);\n                auditLog.record(userId, \"sms sent\");\n            }\n        } else if (type.equals(\"PUSH\")) {\n            String token = userRepo.getDeviceToken(userId);\n            if (token != null && !token.isEmpty()) {\n                pushService.send(token, message);\n                auditLog.record(userId, \"push sent\");\n            }\n        }\n    }\n}\n```",
+      "expected_output": "Identifies type-branching (violates OCP/SRP), low cohesion (one method doing dispatch + validation + sending + audit). Refactors to a Notifier interface with EmailNotifier/SmsNotifier/PushNotifier implementations, NotificationService depends on a collection of Notifiers looked up by type (DIP). Validation pushed into each notifier (LSP/substitutability). Audit as a cross-cutting step. Composed methods at one level of abstraction (SLAP).",
+      "files": [],
+      "expectations": [
+        "Identifies the if/else type-branching as an open-closed principle violation",
+        "Introduces a Notifier (or similar) interface with one implementation per channel",
+        "NotificationService depends on the interface, not concrete channels (dependency inversion)",
+        "Splits responsibilities so dispatch, validation, sending, and audit are separated (single responsibility)",
+        "Refactored methods are short and at a single level of abstraction (composed method / SLAP)",
+        "Adding a new notification channel requires a new class, not editing NotificationService"
+      ]
+    }
+  ]
+}
