@@ -1,5 +1,4 @@
 {
-  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "agent-skills",
   "version": "1.0.0",
   "description": "Agent Skills for Java development, brainstorming, and terse communication: Dux4J state management, Java design principles, idea-to-design workflow, and ultra-compressed responses.",
